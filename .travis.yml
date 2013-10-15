@@ -14,8 +14,7 @@ before_install:
 install:
   - mkdir build
   - cd build
-  - cmake ../ \
-          -DOPENCL_LIBRARY:FILEPATH=/usr/lib/libOpenCL.so \
+  - cmake -DOPENCL_LIBRARY:FILEPATH=/usr/lib/libOpenCL.so \
           -DOPENMM_BUILD_AMOEBA_CUDA_LIB:BOOL=OFF \
           -DOPENMM_BUILD_AMOEBA_PLUGIN:BOOL=ON \
           -DOPENMM_BUILD_CUDA_DOUBLE_PRECISION_TESTS:BOOL=OFF \
@@ -35,7 +34,8 @@ install:
           -DOPENMM_BUILD_RPMD_PLUGIN:BOOL=ON \
           -DOPENMM_BUILD_SERIALIZATION_SUPPORT:BOOL=ON \
           -DOPENMM_BUILD_STATIC_LIB:BOOL=OFF \
-          -DOPENMM_GENERATE_API_DOCS:BOOL=OFF
+          -DOPENMM_GENERATE_API_DOCS:BOOL=OFF \
+          ..
   - make
 
 script:
