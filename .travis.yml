@@ -4,7 +4,7 @@ before_install:
   - pwd
   - sudo apt-get update
   - #sudo apt-get -qq install doxygen swig
-  - sudo apt-get -qq install cmake rpm alien libnuma1 fftw-dev opencl-headers
+  - sudo apt-get -qq install cmake rpm alien libnuma1 fftw-dev opencl-headers libgccxml-dev gccxml
   - wget http://registrationcenter.intel.com/irc_nas/3555/intel_sdk_for_ocl_applications_xe_2013_r2_sdk_3.1.1.11385_x64.tgz
   - tar -xzvf intel_sdk_for_ocl_applications_xe_2013_r2_sdk_3.1.1.11385_x64.tgz
   - cd intel_sdk_for_ocl_applications_xe_2013_r2_sdk_3.1.1.11385_x64
