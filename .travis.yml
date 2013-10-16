@@ -41,6 +41,7 @@ install:
           -DOPENMM_BUILD_SERIALIZATION_SUPPORT:BOOL=ON
           -DOPENMM_BUILD_STATIC_LIB:BOOL=OFF
           -DOPENMM_GENERATE_API_DOCS:BOOL=OFF  ..
+  - cat CMakeCache.txt
   - make
 
 script:
