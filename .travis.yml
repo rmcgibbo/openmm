@@ -45,5 +45,6 @@ install:
 
 script:
   - pwd
-  - ./TestOpenCLHarmonicBondForceSingle
+  - ls
+  - for file in `ls Test*`; do $file; done
   - make test
