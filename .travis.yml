@@ -45,4 +45,5 @@ install:
 
 script:
   - pwd
+  - ./TestOpenCLHarmonicBondForceSingle
   - make test
