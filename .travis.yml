@@ -11,6 +11,7 @@ before_install:
   - for f in *.rpm; do fakeroot alien --to-deb $f; done
   - for f in *.deb; do sudo dpkg -i $f; done
   - sudo ln -s /opt/intel/opencl-1.2-3.1.1.11385/etc/ /etc/OpenCL/vendors/intel64.icd
+  - sudo ln -s /opt/intel/opencl-1.2-3.1.1.11385/lib64/libOpenCL.so /usr/lib/libOpenCL.so
   - sudo ldconfig
   - cd ..
   - sudo apt-get install opencl-headers  libfftw3-dev libfftw3-3
