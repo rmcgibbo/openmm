@@ -58,8 +58,9 @@ public:
      * @param maxIterations  the maximum number of iterations to perform.  If this is 0, minimation is continued
      *                       until the results converge without regard to how many iterations it takes.  The
      *                       default value is 0.
+     * @param verbose        Print debugging messages to stdout. The default value is false.
      */
-    static void minimize(Context& context, double tolerance = 10, int maxIterations = 0);
+    static void minimize(Context& context, double tolerance = 10, int maxIterations = 0, bool verbose = false);
 };
 
 } // namespace OpenMM

@@ -81,7 +81,7 @@ class Simulation(object):
         else:
             self.context = mm.Context(system, integrator, platform, platformProperties)
 
-    def minimizeEnergy(self, tolerance=10*unit.kilojoule/unit.mole, maxIterations=0):
+    def minimizeEnergy(self, tolerance=10*unit.kilojoule/unit.mole, maxIterations=0, verbose=False):
         """Perform a local energy minimization on the system.
 
         Parameters:
@@ -89,7 +89,7 @@ class Simulation(object):
          - maxIterations (int=0) The maximum number of iterations to perform.  If this is 0, minimization is continued
            until the results converge without regard to how many iterations it takes.
         """
-        mm.LocalEnergyMinimizer.minimize(self.context, tolerance, maxIterations)
+        mm.LocalEnergyMinimizer.minimize(self.context, tolerance, maxIterations, verbose)
 
     def step(self, steps):
         """Advance the simulation by integrating a specified number of time steps."""

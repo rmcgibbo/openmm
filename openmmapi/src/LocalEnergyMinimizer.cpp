@@ -36,6 +36,7 @@
 #include <cmath>
 #include <sstream>
 #include <vector>
+#include <cstdio>
 
 using namespace OpenMM;
 using namespace std;
@@ -43,13 +44,16 @@ using namespace std;
 struct MinimizerData {
     Context& context;
     double k;
-    MinimizerData(Context& context, double k)
-        : context(context), k(k) {}
+    int iter;
+    bool verbose;
+    MinimizerData(Context& context, double k, bool verbose)
+        : context(context), k(k), iter(0), verbose(verbose) {}
 };
 
 static lbfgsfloatval_t evaluate(void *instance, const lbfgsfloatval_t *x, lbfgsfloatval_t *g, const int n, const lbfgsfloatval_t step) {
     MinimizerData* data = reinterpret_cast<MinimizerData*>(instance);
     Context& context = data->context;
+    bool verbose = data->verbose;
     const System& system = context.getSystem();
     int numParticles = system.getNumParticles();
 
@@ -62,6 +66,7 @@ static lbfgsfloatval_t evaluate(void *instance, const lbfgsfloatval_t *x, lbfgsf
     context.computeVirtualSites();
     State state = context.getState(State::Forces | State::Energy);
     const vector<Vec3>& forces = state.getForces();
+    double forceNorm2 = 0;
     for (int i = 0; i < numParticles; i++) {
         if (system.getParticleMass(i) == 0) {
             g[3*i] = 0.0;
@@ -72,9 +77,24 @@ static lbfgsfloatval_t evaluate(void *instance, const lbfgsfloatval_t *x, lbfgsf
             g[3*i] = -forces[i][0];
             g[3*i+1] = -forces[i][1];
             g[3*i+2] = -forces[i][2];
+
+            if (verbose) {
+                forceNorm2 += forces[i][0]*forces[i][0];
+                forceNorm2 += forces[i][1]*forces[i][1];
+                forceNorm2 += forces[i][2]*forces[i][2];
+            }
         }
     }
     double energy = state.getPotentialEnergy();
+
+
+    if (verbose) {
+        if (data->iter == 0) {
+            printf("OpenMM L-BFGS Minimizer\n");
+        }
+        printf("At iterate %5d f= %e    |g|= %e\n", data->iter,
+               energy, sqrt(forceNorm2));
+    }
 
     // Add harmonic forces for any constraints.
 
@@ -98,10 +118,11 @@ static lbfgsfloatval_t evaluate(void *instance, const lbfgsfloatval_t *x, lbfgsf
         g[3*particle2+1] += kdr*delta[1];
         g[3*particle2+2] += kdr*delta[2];
     }
+    data->iter++;
     return energy;
 }
 
-void LocalEnergyMinimizer::minimize(Context& context, double tolerance, int maxIterations) {
+void LocalEnergyMinimizer::minimize(Context& context, double tolerance, int maxIterations, bool verbose) {
     const System& system = context.getSystem();
     int numParticles = system.getNumParticles();
     lbfgsfloatval_t *x = lbfgs_malloc(numParticles*3);
@@ -144,7 +165,7 @@ void LocalEnergyMinimizer::minimize(Context& context, double tolerance, int maxI
         // Perform the minimization.
 
         lbfgsfloatval_t fx;
-        MinimizerData data(context, k);
+        MinimizerData data(context, k, verbose);
         lbfgs(numParticles*3, x, &fx, evaluate, NULL, &data, &param);
 
         // Check whether all constraints are satisfied.
@@ -172,7 +193,7 @@ void LocalEnergyMinimizer::minimize(Context& context, double tolerance, int maxI
         if (maxError > 100*constraintTol) {
             // We've gotten far enough from a valid state that we might have trouble getting
             // back, so reset to the original positions.
-            
+
             for (int i = 0; i < numParticles; i++) {
                 x[3*i] = initialPos[i][0];
                 x[3*i+1] = initialPos[i][1];
@@ -182,4 +203,3 @@ void LocalEnergyMinimizer::minimize(Context& context, double tolerance, int maxI
     }
     lbfgs_free(x);
 }
-
