@@ -92,7 +92,7 @@ static lbfgsfloatval_t evaluate(void *instance, const lbfgsfloatval_t *x, lbfgsf
         if (data->iter == 0) {
             printf("OpenMM L-BFGS Minimizer\n");
         }
-        printf("At iterate %5d f= %e    |g|= %e\n", data->iter,
+        printf("At iterate %5d    f= %e    |g|= %e\n", data->iter,
                energy, sqrt(forceNorm2));
     }
 
